@@ -99,6 +99,26 @@ $(function () {
     });
 
 
+    // tabs
+    function initTabs() {
+        $('.tabs').each(function () {
+            $(this).find('.tab-btn').each(function (index) {
+                if (index == 0) $(this).addClass('active');
+            });
+            $(this).find(".tab-content").each(function (index) {
+                if (index == 0) {
+                    $(this).addClass('active');
+                } else {
+                    $(this).removeClass('active');
+                }
+            });
+
+        })
+    }
+
+    initTabs();
+
+
     // click handlers
 
     $(document).on('click', (e) => {
@@ -145,7 +165,19 @@ $(function () {
             $target.next().slideToggle();
             $target.parent().siblings()
                 .find('.info__faq-button').removeClass('info__faq-button_active').next().slideUp();
+        }
 
+        // tabs
+
+        if ($target.hasClass('tab-btn')) {
+            $target.addClass("active")
+                .siblings()
+                .removeClass("active")
+                .closest(".tabs")
+                .find(".tab-content")
+                .removeClass('active')
+                .eq($target.index())
+                .addClass('active')
         }
 
 
@@ -202,6 +234,7 @@ $(function () {
         $body.toggleClass(className);
 
     }
+
 
 
     // sliders 
@@ -319,15 +352,17 @@ $(function () {
 
             rangeSlider.noUiSlider.on('update', function (values, handle) {
                 inputs[handle].value = Math.round(values[handle]);
-                // console.log(inputs[handle]);
-                updateValue(inputs[handle])
+                updateValue(inputs[handle]);
+            });
+
+            rangeSlider.noUiSlider.on('start', function (values, handle) {
+                $(inputs[handle]).addClass('active');
             });
 
             const setRangeSlider = (i, value) => {
                 let arr = [null, null];
                 arr[i] = value;
                 rangeSlider.noUiSlider.set(arr);
-
             };
 
             inputs.forEach((el, index) => {
@@ -335,21 +370,20 @@ $(function () {
                 el.addEventListener('change', (e) => {
                     setRangeSlider(index, e.currentTarget.value);
 
-
                 });
             });
 
             inputs.forEach(input => {
                 input.addEventListener('input', (e) => {
                     updateValue(e.target);
+                    $(input).addClass('active');
                 })
             });
 
             function updateValue(input) {
 
-
                 if (input.value.length >= input.max.length) {
-                    input.value = input.value.slice(0, input.max.length)
+                    input.value = input.value.slice(0, input.max.length);
                 }
 
                 if (input == startInput) {
@@ -391,10 +425,8 @@ $(function () {
     if ($animItems.length > 0) {
 
         $(document).on('scroll', function () {
-            footerParallax();
             animOnScroll();
         });
-
 
         function animOnScroll() {
 
@@ -467,36 +499,8 @@ $(function () {
             // }
 
         }
-        var $window = jQuery(window),
-            $footer = jQuery(".footer"),
-            $viewport = window.innerHeight,
-            $startEffect = $footer.offset().top,
-            $prev = $footer.prev(),
-            $useStartEffect = $startEffect < $viewport;
 
-
-        function footerParallax() {
-            var $scrollPos = $window.scrollTop() - $startEffect,
-                $ratio = 0.6;
-
-            var prevOffset = $prev.offset().top + $prev.height() - $window.scrollTop();
-            var marginTop = 0;
-
-            if (prevOffset < $viewport && prevOffset < $startEffect) {
-                if ($useStartEffect) {
-                    marginTop = (prevOffset - $startEffect) * $ratio;
-                } else {
-                    marginTop = (prevOffset - $viewport) * $ratio;
-                }
-            }
-
-            $footer.css({
-                "margin-top": marginTop + 'px'
-            });
-        }
-
-        animOnScroll();
-        footerParallax();
+        animOnScroll();;
     }
 
 
